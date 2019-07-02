@@ -13,10 +13,8 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
-import javax.validation.Path;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -41,9 +39,42 @@ public class ControllerExceptionHandler {
         return ResultBean.badRequest();
     }
 
+    /**
+     * 验证 JSON 方式校验失败异常 ConstraintViolationException
+     * @return
+     */
+    @ExceptionHandler(ConstraintViolationException.class)
+    @ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
+    public ResultBean validatedException(ConstraintViolationException e) {
+        Map<String, String> indexMap = new HashMap<>();
+
+        Map<String, String> validResult = new HashMap<>();
+        Map<String, Map<String, String>> listValid = new HashMap<>();
+        String indexKey,propertyKey;
+        for (ConstraintViolation violation : e.getConstraintViolations()) {
+            String path = violation.getPropertyPath().toString();
+
+            if (path.contains("].")) {
+                propertyKey = path.substring(path.lastIndexOf("].") + 2);
+                if (listValid.containsKey((indexKey = path.substring(0, path.indexOf("].") + 1)))) {
+                    listValid.get(indexKey).put(propertyKey, violation.getMessage());
+                } else {
+                    HashMap<String, String> map = new HashMap<>();
+                    map.put(propertyKey, violation.getMessage());
+                    listValid.put(indexKey, map);
+                }
+            } else {
+                validResult.put(path, violation.getMessage());
+            }
+        }
+        if (!listValid.isEmpty()) {
+            return ResultBean.validError(Arrays.asList(listValid.values().toArray()));
+        }
+        return ResultBean.validError(validResult);
+    }
 
     /**
-     * 验证异常
+     * 验证表单方式校验失败异常 MethodArgumentNotValidException
      * @return
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -54,16 +85,17 @@ public class ControllerExceptionHandler {
         Map<String, String> validResult = new HashMap<>();
 
         Map<String, Map<String, String>> listValid = new HashMap<>();
-        String field;
-        String indexKey;
+        String field,indexKey,propertyKey;
+
         for (FieldError error : result.getFieldErrors()) {
 
             if ((field = error.getField()).contains("].")) {
+                propertyKey = field.substring(field.lastIndexOf("].") + 2);
                 if (listValid.containsKey((indexKey = field.substring(0, field.indexOf("].") + 1)))) {
-                    listValid.get(indexKey).put(field.substring(field.lastIndexOf("].") + 2), error.getDefaultMessage());
+                    listValid.get(indexKey).put(propertyKey, error.getDefaultMessage());
                 } else {
                     HashMap<String, String> map = new HashMap<>();
-                    map.put(field.substring(field.lastIndexOf("].") + 2), error.getDefaultMessage());
+                    map.put(propertyKey, error.getDefaultMessage());
                     listValid.put(indexKey, map);
                 }
             } else {
@@ -72,20 +104,11 @@ public class ControllerExceptionHandler {
         }
 
         if (!listValid.isEmpty()) {
-            return ResultBean.validError(listValid.values().toArray());
+            return ResultBean.validError(Arrays.asList(listValid.values().toArray()));
         }
 
         return ResultBean.validError(validResult);
     }
 
-    /**
-     * 处理验证异常
-     * @return
-     */
-//    @ExceptionHandler(ValidRequestException.class)
-//    @ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
-//    public ResultBean validRequestException(ValidRequestException e) {
-//        return ResultBean.validError(e.getData());
-//    }
 
 }
