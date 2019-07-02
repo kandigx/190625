@@ -2,9 +2,13 @@ package com.kandigx.project.controller;
 
 import com.kandigx.project.helper.ResultBean;
 import com.kandigx.project.helper.ValidRequestException;
+import com.kandigx.project.valid.validator.ValidList;
 import com.kandigx.project.vo.OrderVO;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import java.util.List;
 
 /**
  * 数据接收 controller
@@ -23,7 +27,7 @@ public class DataAcceptController {
     }
 
     @PostMapping("dataEntry")
-    public ResultBean dataEntry(@RequestBody @Validated OrderVO orderVO) throws ValidRequestException  {
+    public ResultBean dataEntry(@RequestBody @Valid ValidList<OrderVO> list) throws ValidRequestException  {
 
         return ResultBean.success();
     }

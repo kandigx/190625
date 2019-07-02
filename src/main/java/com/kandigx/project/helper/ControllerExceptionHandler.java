@@ -13,7 +13,10 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
+import javax.validation.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -38,19 +41,6 @@ public class ControllerExceptionHandler {
         return ResultBean.badRequest();
     }
 
-    /**
-     * 验证异常
-     * @return
-     */
-//    @ExceptionHandler(ConstraintViolationException.class)
-//    @ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
-//    public ResultBean validatedException(ConstraintViolationException e) {
-//        Map<String, String> validResult = new HashMap<>();
-//        for (ConstraintViolation violation : e.getConstraintViolations()) {
-//            validResult.put(violation.getPropertyPath().toString(), violation.getMessage());
-//        }
-//        return ResultBean.validError(validResult);
-//    }
 
     /**
      * 验证异常
@@ -62,9 +52,29 @@ public class ControllerExceptionHandler {
         BindingResult result = e.getBindingResult();
 
         Map<String, String> validResult = new HashMap<>();
+
+        Map<String, Map<String, String>> listValid = new HashMap<>();
+        String field;
+        String indexKey;
         for (FieldError error : result.getFieldErrors()) {
-            validResult.put(error.getField(), error.getDefaultMessage());
+
+            if ((field = error.getField()).contains("].")) {
+                if (listValid.containsKey((indexKey = field.substring(0, field.indexOf("].") + 1)))) {
+                    listValid.get(indexKey).put(field.substring(field.lastIndexOf("].") + 2), error.getDefaultMessage());
+                } else {
+                    HashMap<String, String> map = new HashMap<>();
+                    map.put(field.substring(field.lastIndexOf("].") + 2), error.getDefaultMessage());
+                    listValid.put(indexKey, map);
+                }
+            } else {
+                validResult.put(error.getField(), error.getDefaultMessage());
+            }
         }
+
+        if (!listValid.isEmpty()) {
+            return ResultBean.validError(listValid.values().toArray());
+        }
+
         return ResultBean.validError(validResult);
     }
 
