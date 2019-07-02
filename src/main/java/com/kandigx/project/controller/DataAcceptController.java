@@ -3,13 +3,8 @@ package com.kandigx.project.controller;
 import com.kandigx.project.helper.ResultBean;
 import com.kandigx.project.helper.ValidRequestException;
 import com.kandigx.project.vo.OrderVO;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * 数据接收 controller
@@ -28,17 +23,7 @@ public class DataAcceptController {
     }
 
     @PostMapping("dataEntry")
-    public ResultBean dataEntry(@RequestBody @Valid OrderVO orderVO, BindingResult result) throws ValidRequestException  {
-
-        if (result.hasErrors()) {
-            Map<String, String> errorMap = new HashMap<>();
-            for (ObjectError error : result.getAllErrors()) {
-                errorMap.put(error.getObjectName(), error.getDefaultMessage());
-            }
-            throw new ValidRequestException(errorMap);
-        }
-
-
+    public ResultBean dataEntry(@RequestBody @Validated OrderVO orderVO) throws ValidRequestException  {
 
         return ResultBean.success();
     }
