@@ -3,12 +3,12 @@ package com.kandigx.project.cofig;
 import com.rabbitmq.client.ShutdownSignalException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.slf4j.Logger;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.connection.Connection;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionListener;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -25,10 +25,19 @@ public class RabbitConfiguration {
 
     private final ConnectionFactory connectionFactory;
 
+    private final String defaultQueue;
+
+    /**
+     * 构造方法，注入 connectionFactory，添加监听器
+     * @param connectionFactory
+     * @param defaultQueue
+     */
     @Autowired
-    public RabbitConfiguration(ConnectionFactory connectionFactory) {
+    public RabbitConfiguration(ConnectionFactory connectionFactory,
+                               @Value("${rabbitmq.queue.default}")String defaultQueue) {
         this.connectionFactory = connectionFactory;
-        connectionFactory.addConnectionListener(new ConnectionListener() {
+        this.defaultQueue = defaultQueue;
+        this.connectionFactory.addConnectionListener(new ConnectionListener() {
             @Override
             public void onCreate(Connection connection) {
                 logger.warn("RabbitMQ Connection Created : ");
@@ -42,8 +51,8 @@ public class RabbitConfiguration {
     }
 
     @Bean
-    public Queue queue() {
-        return new Queue("nice");
+    public Queue defaultQueue() {
+        return new Queue(this.defaultQueue);
     }
 
 
