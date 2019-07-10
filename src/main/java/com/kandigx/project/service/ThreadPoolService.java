@@ -1,5 +1,9 @@
 package com.kandigx.project.service;
 
+import com.kandigx.project.valid.validator.ValidList;
+
+import java.util.Map;
+
 /**
  * 线程池
  *
@@ -8,6 +12,6 @@ package com.kandigx.project.service;
  */
 public interface ThreadPoolService {
 
-
+    Map<String, String> executeValidTask(ValidList list);
 
 }

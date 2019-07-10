@@ -28,6 +28,10 @@ public class ValidThreadPoolConfiguration {
         this.keepAlive = keepAlive;
     }
 
+    /**
+     * 线程池配置
+     * @return
+     */
     @Bean
     public ExecutorService executorService() {
         ThreadFactory threadFactory = new ThreadFactoryBuilder().setNameFormat("consumer-queue-thread-%d").build();
