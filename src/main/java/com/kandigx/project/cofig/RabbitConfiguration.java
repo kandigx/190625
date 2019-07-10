@@ -35,8 +35,8 @@ public class RabbitConfiguration {
     @Autowired
     public RabbitConfiguration(ConnectionFactory connectionFactory,
                                @Value("${rabbitmq.queue.default}")String defaultQueue) {
-        this.connectionFactory = connectionFactory;
         this.defaultQueue = defaultQueue;
+        this.connectionFactory = connectionFactory;
         this.connectionFactory.addConnectionListener(new ConnectionListener() {
             @Override
             public void onCreate(Connection connection) {
@@ -50,11 +50,15 @@ public class RabbitConfiguration {
         });
     }
 
+
+    /**
+     * 默认队列
+     * @return
+     */
     @Bean
     public Queue defaultQueue() {
         return new Queue(this.defaultQueue);
     }
-
 
 
 }

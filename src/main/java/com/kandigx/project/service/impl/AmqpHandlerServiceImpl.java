@@ -1,6 +1,8 @@
-package com.kandigx.project.service;
+package com.kandigx.project.service.impl;
 
+import com.kandigx.project.service.MsgHandlerService;
 import org.springframework.amqp.core.AmqpTemplate;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -15,14 +17,17 @@ import org.springframework.stereotype.Service;
 public class AmqpHandlerServiceImpl implements MsgHandlerService {
 
     private final String msgKey;
+    private final String queue;
 
     private final AmqpTemplate amqpTemplate;
 
     @Autowired
     public AmqpHandlerServiceImpl(AmqpTemplate amqpTemplate,
-                                  @Value("${rabbitmq.routingKey.default}") String routingKey) {
+                                  @Value("${rabbitmq.routingKey.default}") String routingKey,
+                                  @Value("${rabbitmq.queue.default}") String queue) {
         this.amqpTemplate = amqpTemplate;
         this.msgKey = routingKey;
+        this.queue = queue;
     }
 
 
@@ -31,4 +36,11 @@ public class AmqpHandlerServiceImpl implements MsgHandlerService {
         amqpTemplate.convertAndSend(this.msgKey, msg);
         return true;
     }
+
+    @Override
+    public boolean msgSub(String queue) {
+        //todo
+        return true;
+    }
+
 }

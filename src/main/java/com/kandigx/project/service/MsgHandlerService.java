@@ -10,4 +10,6 @@ public interface MsgHandlerService {
 
     boolean msgPub(String msg);
 
+    boolean msgSub(String msg);
+
 }
