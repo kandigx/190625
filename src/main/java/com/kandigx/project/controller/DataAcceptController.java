@@ -1,12 +1,13 @@
 package com.kandigx.project.controller;
 
 import com.kandigx.project.helper.ResultBean;
-import com.kandigx.project.helper.ValidRequestException;
+import com.kandigx.project.service.ValidService;
 import com.kandigx.project.valid.validator.ValidList;
 import com.kandigx.project.vo.OrderVO;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
 
 /**
  * 数据接收 controller
@@ -18,6 +19,17 @@ import javax.validation.Valid;
 @RequestMapping("accept")
 public class DataAcceptController {
 
+    private static final Log log = LogFactory.getLog(DataAcceptController.class);
+
+    private final ValidService validService;
+
+
+    @Autowired
+    public DataAcceptController(ValidService validService) {
+        this.validService = validService;
+
+    }
+
     @GetMapping("order")
     public String accept() {
 
@@ -25,9 +37,9 @@ public class DataAcceptController {
     }
 
     @PostMapping("dataEntry")
-    public ResultBean dataEntry(@RequestBody @Valid ValidList<OrderVO> list) throws ValidRequestException  {
+    public ResultBean dataEntry(@RequestBody ValidList<OrderVO> list) {
 
-        return ResultBean.success();
+        return validService.validList(list);
     }
 
 

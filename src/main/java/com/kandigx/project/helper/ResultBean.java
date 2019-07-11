@@ -57,6 +57,10 @@ public class ResultBean {
         return new ResultBean(ResultEnum.VALID_ERROR.getCode(),ResultEnum.VALID_ERROR.getMsg(),data);
     }
 
+    public static ResultBean validError() {
+        return new ResultBean(ResultEnum.VALID_ERROR.getCode(),ResultEnum.VALID_ERROR.getMsg());
+    }
+
     public static ResultBean success(Object data) {
         return new ResultBean(data);
     }

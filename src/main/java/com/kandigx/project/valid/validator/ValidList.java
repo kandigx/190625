@@ -141,4 +141,8 @@ public class ValidList<E> implements List<E> {
     public List<E> subList(int fromIndex, int toIndex) {
         return list.subList(fromIndex, toIndex);
     }
+
+    public ValidList<E> subValidList(int fromIndex, int toIndex) {
+        return new ValidList(this.list.subList(fromIndex, toIndex));
+    }
 }

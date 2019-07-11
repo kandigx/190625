@@ -60,4 +60,28 @@ public class OrderVO {
     @Email
     private String email;
 
+    public OrderVO() {
+    }
+
+    public OrderVO( String orderId,
+                    String orderTime,
+                    List<String> productIdList,
+                    String price,
+                    String clientId,
+                    String clientName,
+                    String gender,
+                    String age,
+                    String telephone,
+                    String email) {
+        this.orderId = orderId;
+        this.orderTime = orderTime;
+        this.productIdList = productIdList;
+        this.price = price;
+        this.clientId = clientId;
+        this.clientName = clientName;
+        this.gender = gender;
+        this.age = age;
+        this.telephone = telephone;
+        this.email = email;
+    }
 }
