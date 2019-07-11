@@ -1,6 +1,5 @@
 package com.kandigx.project.service;
 
-import com.kandigx.project.helper.ResultBean;
 import com.kandigx.project.valid.validator.ValidList;
 
 import java.util.List;
@@ -14,8 +13,6 @@ import java.util.concurrent.Future;
  * @date 2019-07-11 09:19
  */
 public interface ValidService {
-
-    ResultBean validList(ValidList list);
 
     Future<List<Map<String, String>>> processAsyncValid(ValidList list);
 

@@ -1,6 +1,5 @@
 package com.kandigx.project.service.impl;
 
-import com.kandigx.project.helper.ResultBean;
 import com.kandigx.project.service.ValidService;
 import com.kandigx.project.valid.validator.ValidList;
 import org.apache.commons.logging.Log;
@@ -14,10 +13,7 @@ import org.springframework.stereotype.Service;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 import java.util.*;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 /**
  * @author kandigx
@@ -47,46 +43,6 @@ public class ValidServiceImpl implements ValidService {
         this.validTimeOutMs = validTimeOutMs;
     }
 
-    /**
-     * 验证list，根据数据量决定是否使用多线程
-     * @param list
-     * @return
-     */
-    @Override
-    public ResultBean validList(ValidList list) {
-
-        //大于设定的数据量，则使用多线程
-        if (list != null && list.size() > validListMaxSize) {
-            try {
-                Future<List<Map<String, String>>> task1 = processAsyncValid(list.subValidList(0, list.size() / 2));
-                Future<List<Map<String, String>>> task2 = processAsyncValid(list.subValidList(list.size() / 2, list.size()));
-                //设置验证超时时间
-                List<Map<String, String>> result1 = task1.get(validTimeOutMs, TimeUnit.MILLISECONDS);
-                List<Map<String, String>> result2 = task2.get(validTimeOutMs, TimeUnit.MILLISECONDS);
-
-                if (!result1.isEmpty() || !result2.isEmpty()) {
-                    List<Map<String, String>> result = new ArrayList<>();
-                    result.addAll(result1);
-                    result.addAll(result2);
-
-                    return ResultBean.validError(result);
-                }
-
-            } catch (ExecutionException | InterruptedException | TimeoutException e) {
-                log.warn(e.getMessage());
-
-                return ResultBean.validError("验证失败，请稍后重试！");
-            }
-        } else {
-            //否知直接进行处理
-            List<Map<String, String>> result = processValid(list);
-            if (!result.isEmpty()) {
-                return ResultBean.validError(result);
-            }
-        }
-
-        return ResultBean.success();
-    }
 
     /**
      * 调用线程池，使用异步方法进行验证
@@ -96,7 +52,7 @@ public class ValidServiceImpl implements ValidService {
     @Async
     @Override
     public Future<List<Map<String, String>>> processAsyncValid(ValidList list) {
-
+        log.info("async thread");
         return new AsyncResult<>(processValid(list));
     }
 
@@ -107,6 +63,8 @@ public class ValidServiceImpl implements ValidService {
      */
     @Override
     public List<Map<String, String>> processValid(ValidList list) {
+        long startTime = System.currentTimeMillis();
+        log.info("begin valid，list size : " + list.size());
         //进行验证，获取验证结果
         Set<ConstraintViolation<Object>> constraintViolations = validator.validate(list);
 
@@ -140,12 +98,15 @@ public class ValidServiceImpl implements ValidService {
                 }
             }
 
+            long endTime = System.currentTimeMillis();
+            log.info("end valid...");
+            log.info("cost time : " + (endTime - startTime));
+
             return new ArrayList<>(validResultMap.values());
         }
 
         //验证成功则返回空list
         return new ArrayList<>();
     }
-
 
 }

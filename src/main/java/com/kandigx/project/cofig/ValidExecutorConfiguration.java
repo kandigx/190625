@@ -46,6 +46,7 @@ public class ValidExecutorConfiguration extends AsyncConfigurerSupport {
         executor.setMaxPoolSize(maxSize);
         executor.setKeepAliveSeconds(keepAlive);
         executor.setQueueCapacity(queueCapacity);
+        executor.setThreadNamePrefix("async-executor-");
         executor.initialize();
         return executor;
     }
