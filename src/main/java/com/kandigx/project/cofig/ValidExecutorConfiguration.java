@@ -56,22 +56,4 @@ public class ValidExecutorConfiguration extends AsyncConfigurerSupport {
         return executor;
     }
 
-    /**
-     * 使用java executor
-     * @return
-     */
-    @Bean("nativeExecutor")
-    public Executor nativeExecutor() {
-        ThreadPoolExecutor executor = new ThreadPoolExecutor(coreSize,
-                maxSize,
-                keepAlive,
-                TimeUnit.SECONDS,
-                new LinkedBlockingDeque<>(),
-                new ThreadFactoryBuilder().setNameFormat("native-executor-%d").build(),
-                new ThreadPoolExecutor.CallerRunsPolicy());
-
-        return executor;
-    }
-
-
 }
