@@ -1,12 +1,17 @@
 package com.kandigx.project.cofig;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.AsyncConfigurerSupport;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.util.concurrent.Executor;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 线城池配置
@@ -36,7 +41,7 @@ public class ValidExecutorConfiguration extends AsyncConfigurerSupport {
     }
 
     /**
-     * 使用 spring
+     * 使用 spring task executor
      * @return
      */
     @Override
@@ -48,6 +53,23 @@ public class ValidExecutorConfiguration extends AsyncConfigurerSupport {
         executor.setQueueCapacity(queueCapacity);
         executor.setThreadNamePrefix("async-executor-");
         executor.initialize();
+        return executor;
+    }
+
+    /**
+     * 使用java executor
+     * @return
+     */
+    @Bean("nativeExecutor")
+    public Executor nativeExecutor() {
+        ThreadPoolExecutor executor = new ThreadPoolExecutor(coreSize,
+                maxSize,
+                keepAlive,
+                TimeUnit.SECONDS,
+                new LinkedBlockingDeque<>(),
+                new ThreadFactoryBuilder().setNameFormat("native-executor-%d").build(),
+                new ThreadPoolExecutor.CallerRunsPolicy());
+
         return executor;
     }
 

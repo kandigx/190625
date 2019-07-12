@@ -2,7 +2,6 @@ package com.kandigx.project.service.impl;
 
 import com.kandigx.project.service.MsgHandlerService;
 import org.springframework.amqp.core.AmqpTemplate;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;

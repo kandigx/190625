@@ -46,7 +46,6 @@ public class ControllerExceptionHandler {
     @ExceptionHandler(ConstraintViolationException.class)
     @ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
     public ResultBean validatedException(ConstraintViolationException e) {
-        Map<String, String> indexMap = new HashMap<>();
 
         Map<String, String> validResult = new HashMap<>();
         Map<String, Map<String, String>> listValid = new HashMap<>();
