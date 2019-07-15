@@ -15,7 +15,7 @@ public class RabbitMqMsgListenerServiceImpl implements MsgListenerService {
     /**
      * 异步接收数据
      */
-    @Async
+    @Async("nativeExecutor")
     @RabbitListener(queues = "${rabbitmq.queue.default}")
     public void listener() {
         //todo
