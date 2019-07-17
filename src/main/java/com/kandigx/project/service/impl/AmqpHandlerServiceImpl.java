@@ -32,7 +32,11 @@ public class AmqpHandlerServiceImpl implements MsgHandlerService {
 
     @Override
     public boolean msgPub(String msg) {
-        amqpTemplate.convertAndSend(this.msgKey, msg);
+        try {
+            amqpTemplate.convertAndSend(this.msgKey, msg);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return true;
     }
 
