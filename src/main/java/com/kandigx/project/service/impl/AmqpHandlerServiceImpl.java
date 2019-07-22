@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
  * @author kandigx
  * @create 2019-07-04 16:42
  */
-@Service
+@Service("amqpHandlerService")
 public class AmqpHandlerServiceImpl implements MsgHandlerService {
 
     private final String msgKey;

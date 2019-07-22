@@ -1,6 +1,8 @@
 package com.kandigx.project.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.kandigx.project.helper.ResultBean;
+import com.kandigx.project.service.MsgHandlerService;
 import com.kandigx.project.service.ValidService;
 import com.kandigx.project.util.CollectionUtil;
 import com.kandigx.project.valid.validator.ValidList;
@@ -32,14 +34,17 @@ public class DataAcceptController {
     private static final Log log = LogFactory.getLog(DataAcceptController.class);
 
     private final ValidService validService;
+    private final MsgHandlerService msgHandlerService;
     private final int validListMaxSize;
     private final int validTimeOutMs;
 
     @Autowired
     public DataAcceptController(ValidService validService,
+                                MsgHandlerService amqpHandlerService,
                                 @Value("${valid.list-max-size}") int validListMaxSize,
                                 @Value("${valid.time-out-ms}") int validTimeOutMs) {
         this.validService = validService;
+        this.msgHandlerService = amqpHandlerService;
         this.validListMaxSize = validListMaxSize;
         this.validTimeOutMs = validTimeOutMs;
     }
@@ -93,6 +98,9 @@ public class DataAcceptController {
                 return ResultBean.validError(result);
             }
         }
+
+        //发送数据到mq
+        msgHandlerService.msgPub(JSONObject.toJSONString(list));
 
         return ResultBean.success();
     }
