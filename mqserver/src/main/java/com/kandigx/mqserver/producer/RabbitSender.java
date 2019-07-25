@@ -44,7 +44,7 @@ public class RabbitSender {
         rabbitTemplate.setReturnCallback(returnCallback);
         CorrelationData cd = new CorrelationData();
         cd.setId("1234567890");
-        rabbitTemplate.convertAndSend("exchange-1", "spring.hello", msg,cd);
+        rabbitTemplate.convertAndSend("exchange-1", "springboot.hello", msg,cd);
     }
 
 }
