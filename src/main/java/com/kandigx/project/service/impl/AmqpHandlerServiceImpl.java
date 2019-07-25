@@ -1,10 +1,13 @@
 package com.kandigx.project.service.impl;
 
+import com.kandigx.project.amqp.sender.MsgSender;
 import com.kandigx.project.service.MsgHandlerService;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 /**
  * rabbitmq 数据处理
@@ -15,25 +18,24 @@ import org.springframework.stereotype.Service;
 @Service("amqpHandlerService")
 public class AmqpHandlerServiceImpl implements MsgHandlerService {
 
-    private final String msgKey;
-    private final String queue;
+    @Autowired
+    private MsgSender msgSender;
 
-    private final AmqpTemplate amqpTemplate;
+    private final String exchange;
+    private final String routingKey;
 
     @Autowired
-    public AmqpHandlerServiceImpl(AmqpTemplate amqpTemplate,
-                                  @Value("${rabbitmq.routingKey.default}") String routingKey,
-                                  @Value("${rabbitmq.queue.default}") String queue) {
-        this.amqpTemplate = amqpTemplate;
-        this.msgKey = routingKey;
-        this.queue = queue;
+    public AmqpHandlerServiceImpl(@Value("${rabbitmq.exchange.default}") String exchange,
+                                  @Value("${rabbitmq.routingKey.default}") String routingKey) {
+        this.exchange = exchange;
+        this.routingKey = routingKey;
     }
 
 
     @Override
     public boolean msgPub(String msg) {
         try {
-            amqpTemplate.convertAndSend(this.msgKey, msg);
+            msgSender.stringMsgSender(exchange,routingKey, UUID.randomUUID().toString(),msg);
         } catch (Exception e) {
             e.printStackTrace();
         }

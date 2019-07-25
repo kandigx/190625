@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -16,11 +15,13 @@ public class MsgSender {
 
     private static final Logger log = LoggerFactory.getLogger(MsgSender.class);
 
-    @Autowired
     private RabbitTemplate rabbitTemplate;
 
+    public MsgSender(RabbitTemplate rabbitTemplate) {
+        this.rabbitTemplate = rabbitTemplate;
+    }
 
-    final RabbitTemplate.ConfirmCallback confirmCallback = (correlationData, ack, cause) -> {
+    private final RabbitTemplate.ConfirmCallback confirmCallback = (correlationData, ack, cause) -> {
         //未获得确认，则将数据打上标记后放入mongodb 中
         if (!ack) {
             //todo
@@ -28,7 +29,7 @@ public class MsgSender {
     };
 
 
-    final RabbitTemplate.ReturnCallback returnCallback = (message, replyCode, replyText, exchange, routingKey) -> {
+    private final RabbitTemplate.ReturnCallback returnCallback = (message, replyCode, replyText, exchange, routingKey) -> {
         log.info("replyCode: " + replyCode + "replyText: " + replyText + "exchange: " + exchange + "routingKey: " + routingKey);
     };
 
