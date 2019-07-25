@@ -18,15 +18,15 @@ import java.util.UUID;
 @Service("amqpHandlerService")
 public class AmqpHandlerServiceImpl implements MsgHandlerService {
 
-    @Autowired
-    private MsgSender msgSender;
-
+    private final MsgSender msgSender;
     private final String exchange;
     private final String routingKey;
 
     @Autowired
-    public AmqpHandlerServiceImpl(@Value("${rabbitmq.exchange.default}") String exchange,
+    public AmqpHandlerServiceImpl(MsgSender msgSender,
+                                  @Value("${rabbitmq.exchange.default}") String exchange,
                                   @Value("${rabbitmq.routingKey.default}") String routingKey) {
+        this.msgSender = msgSender;
         this.exchange = exchange;
         this.routingKey = routingKey;
     }
